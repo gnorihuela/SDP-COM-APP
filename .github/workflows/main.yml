@@ -23,29 +23,30 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Build APK
+      - name: Build APK Clean
         run: |
-          # 1. Instalamos las herramientas
+          # 1. Instalamos flet y pdfplumber
           pip install "flet[all]" pdfplumber
           
-          # 2. CREAMOS UNA CARPETA LIMPIA
-          # Esto evita cualquier error de "la carpeta no está vacía"
-          flet create sdp_app_folder
+          # 2. Creamos una carpeta de proyecto nueva para evitar errores de "carpeta no vacía"
+          python3 -m flet create sdp_app
           
-          # 3. COPIAMOS TUS ARCHIVOS DENTRO
-          # Metemos tu main.py real y tu icono en esa carpeta nueva
-          cp main.py sdp_app_folder/main.py
-          cp torre-de-control.png sdp_app_folder/torre-de-control.png
+          # 3. Metemos TU código real dentro (sobrescribiendo el contador)
+          cp main.py sdp_app/main.py
           
-          # 4. FABRICAMOS EL APK DESDE DENTRO
-          cd sdp_app_folder
-          flet build apk --icon torre-de-control.png --name "SDP-COM"
+          # 4. TRUCO DEL ICONO: Lo ponemos donde Flet lo busca por defecto
+          # Esto evita tener que usar el argumento --icon que está fallando
+          mkdir -p sdp_app/assets
+          cp torre-de-control.png sdp_app/assets/icon.png
           
-          # 5. MOVEMOS EL RESULTADO AL SITIO CORRECTO
-          # Para que el paso final de GitHub encuentre el archivo
+          # 5. CONSTRUCCIÓN: Usamos python3 -m flet para que sea más estable
+          cd sdp_app
+          python3 -m flet build apk --name "SDP-COM"
+          
+          # 6. Preparamos la salida para el Upload
           cd ..
           mkdir -p build/apk
-          mv sdp_app_folder/build/apk/*.apk build/apk/
+          mv sdp_app/build/apk/*.apk build/apk/
 
       - name: Upload APK
         if: success()
