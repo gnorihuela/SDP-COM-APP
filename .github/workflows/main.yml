@@ -7,7 +7,6 @@ on:
 
 jobs:
   build:
-    name: Build APK
     runs-on: ubuntu-latest
 
     steps:
@@ -32,18 +31,18 @@ jobs:
           channel: stable
 
       - name: Install dependencies
-        run: |
-          pip install "flet[all]"
-          pip install pdfplumber
+        run: pip install "flet[all]" pdfplumber
 
-      - name: Flutter doctor
+      - name: Initialize Flutter
         run: flutter doctor
 
-      - name: Build APK
-        run: |
-          flet build apk --icon torre-de-control.png --name SDP-COM
+      - name: Create Flet project structure
+        run: flet create .
 
-      - name: Upload artifact
+      - name: Build APK
+        run: flet build apk --icon torre-de-control.png --name SDP-COM
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: SDP-COM-App
