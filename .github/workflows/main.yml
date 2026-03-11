@@ -23,30 +23,28 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Build APK Clean
+      - name: Build APK
         run: |
-          # 1. Instalamos flet y pdfplumber
+          # 1. Instalación de dependencias
           pip install "flet[all]" pdfplumber
           
-          # 2. Creamos una carpeta de proyecto nueva para evitar errores de "carpeta no vacía"
-          python3 -m flet create sdp_app
+          # 2. CREACIÓN DEL ARCHIVO DE CONFIGURACIÓN (flet.toml)
+          # Esto evita usar comandos de terminal que el servidor rechaza
+          echo "[app]" > flet.toml
+          echo "name = 'SDP-COM'" >> flet.toml
+          echo "package_name = 'com.sdp.app'" >> flet.toml
+          echo "" >> flet.toml
+          echo "[android]" >> flet.toml
+          echo "icon = 'assets/icon.png'" >> flet.toml
           
-          # 3. Metemos TU código real dentro (sobrescribiendo el contador)
-          cp main.py sdp_app/main.py
+          # 3. ORGANIZACIÓN DE ARCHIVOS
+          # Flet requiere que el icono esté en /assets para el APK
+          mkdir -p assets
+          cp torre-de-control.png assets/icon.png
           
-          # 4. TRUCO DEL ICONO: Lo ponemos donde Flet lo busca por defecto
-          # Esto evita tener que usar el argumento --icon que está fallando
-          mkdir -p sdp_app/assets
-          cp torre-de-control.png sdp_app/assets/icon.png
-          
-          # 5. CONSTRUCCIÓN: Usamos python3 -m flet para que sea más estable
-          cd sdp_app
-          python3 -m flet build apk --name "SDP-COM"
-          
-          # 6. Preparamos la salida para el Upload
-          cd ..
-          mkdir -p build/apk
-          mv sdp_app/build/apk/*.apk build/apk/
+          # 4. CONSTRUCCIÓN SIN PARÁMETROS
+          # Al existir el flet.toml, ya no necesitamos pasar --icon ni --name
+          flet build apk
 
       - name: Upload APK
         if: success()
