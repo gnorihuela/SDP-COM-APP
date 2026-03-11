@@ -1,47 +1,51 @@
 name: Build Android APK
-on: [push]
+
+on:
+  push:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: temurin
+          java-version: 17
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          channel: stable
 
-      - name: Install Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: 3.10
 
-      - name: Build APK Clean
+      - name: Install dependencies
         run: |
           pip install "flet[all]" pdfplumber
-          
-          # 1. ESCONDEMOS tu código para que flet create no lo vea y no pregunte nada
-          mv main.py codigo_bueno.py
-          
-          # 2. CREAMOS la estructura (esto genera el contador del "+" de forma limpia)
-          flet create .
-          
-          # 3. MACHACAMOS el ejemplo con TU código real
-          rm main.py
-          mv codigo_bueno.py main.py
-          
-          # 4. CONSTRUIMOS (Usando tu icono torre-de-control.png)
+
+      - name: Debug files
+        run: |
+          echo "Contenido del repo:"
+          ls -R
+
+      - name: Build APK
+        run: |
+          # Inicializamos Flutter (evita errores)
+          flutter doctor
+
+          # Construimos el APK
           flet build apk --icon torre-de-control.png --name "SDP-COM"
 
       - name: Upload APK
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: SDP-COM-App
