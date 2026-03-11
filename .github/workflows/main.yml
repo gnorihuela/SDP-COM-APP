@@ -30,9 +30,10 @@ jobs:
 
       - name: Build APK
         run: |
-          # El comando mágico para ignorar errores de permisos de git
-          git config --global --add safe.directory /github/workspace
-          python -m flet build apk --name "SDP-COM"
+          # El comando 'create' genera los archivos de proyecto que faltan automáticamente
+          flet create .
+          # Ahora fabricamos con un nombre sencillo
+          flet build apk --project SDP_COM
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
