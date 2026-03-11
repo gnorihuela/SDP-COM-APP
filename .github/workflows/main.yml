@@ -25,15 +25,25 @@ jobs:
 
       - name: Build APK Clean
         run: |
+          # 1. Instalamos herramientas
           pip install "flet[all]" pdfplumber
+          
+          # 2. LIMPIEZA Y SEGURIDAD:
+          # Guardamos tu main.py real en un archivo temporal
+          cp main.py codigo_real.py
           rm -rf build
-          # 1. GUARDAR COPIA de tu código real
-          cp main.py main_backup.py
-          # 2. CREAR ESTRUCTURA (Flet pondrá aquí su contador de ejemplo)
+          
+          # 3. PREPARACIÓN:
+          # Flet crea la estructura (y aquí es donde borra el main.py)
           flet create .
-          # 3. RESTAURAR TU CÓDIGO (Borramos el ejemplo y ponemos el tuyo)
-          mv main_backup.py main.py
-          # 4. CONSTRUIR APK (Con tu icono y nombre)
+          
+          # 4. RESTAURACIÓN:
+          # Borramos el contador de ejemplo y ponemos TU código real encima
+          rm main.py
+          mv codigo_real.py main.py
+          
+          # 5. CONSTRUCCIÓN FINAL:
+          # Usamos tu icono y nombre de App
           flet build apk --icon torre-de-control.png --name "SDP-COM"
 
       - name: Upload APK
