@@ -7,7 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Crucial para poder rescatar tu main.py original
+          fetch-depth: 0  # OBLIGATORIO: Permite a GitHub recuperar tu main.py real
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -20,7 +20,7 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Install Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
@@ -28,13 +28,12 @@ jobs:
       - name: Build APK Clean
         run: |
           pip install "flet[all]" pdfplumber
-          # Limpieza total de carpetas previas
           rm -rf build
-          # Generamos estructura (flet create pisa tu main.py)
+          # 1. Crea la estructura (aquí se borra tu main.py momentáneamente)
           flet create . 
-          # RESCATE: Volvemos a poner tu archivo real antes de empaquetar
+          # 2. SEGURO DE VIDA: Recupera tu código real 'SDP-COM COMMAND CENTER'
           git checkout main.py
-          # Compilación final con tu icono y nombre de App
+          # 3. Fabricamos con tu icono y nombre real
           flet build apk --icon torre-de-control.png --name "SDP-COM"
 
       - name: Upload APK
