@@ -25,22 +25,26 @@ jobs:
 
       - name: Build APK
         run: |
-          # 1. Instalamos la versión CLI robusta
-          pip install flet==0.25.2
+          # 1. Instalación de dependencias
+          pip install flet pdfplumber
           
-          # 2. Configuración oficial flet.toml
+          # 2. ACEPTAR LICENCIAS DE ANDROID (Esto es lo que falta)
+          # Enviamos "y" (yes) a todas las licencias del SDK de Android
+          yes | sdkmanager --licenses || true
+          
+          # 3. Configuración del proyecto
           echo "[app]" > flet.toml
           echo "name = 'SDP-COM'" >> flet.toml
           echo "package_name = 'com.sdp.app'" >> flet.toml
           echo "main_module = 'main'" >> flet.toml
           
-          # 3. Assets
+          # 4. Iconos
           mkdir -p assets
           if [ -f "torre-de-control.png" ]; then
             cp torre-de-control.png assets/icon.png
           fi
 
-          # 4. Construcción (Esta versión descarga flet-embed automáticamente sin errores)
+          # 5. Construcción
           flet build apk
 
       - name: Upload APK
