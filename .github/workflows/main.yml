@@ -1,38 +1,8 @@
-name: Build Android APK
-on: [push]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-
-      - name: Install Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Build APK
+- name: Build APK
         run: |
-          pip install flet pdfplumber
-          # Creamos la estructura necesaria para que no se queje
+          # Instalamos flet con soporte para compilación
+          pip install "flet[all]" pdfplumber
+          # Creamos el entorno de proyecto limpio
           flet create .
-          # Construcción forzada
-          flet build apk --name "SDP_COM"
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: SDP-COM-App
-          path: build/apk/*.apk
+          # Compilamos solo para la arquitectura más común de móvil
+          flet build apk
