@@ -7,30 +7,42 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # 1. Necesitamos Java para que Flutter pueda compilar para Android
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 2. Necesitamos Flutter (aquí estaba el fallo de antes)
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Install Flet CLI
-        run: |
-          pip install flet==0.21.2
-
       - name: Build APK
         run: |
-          # 1. Crear flet.toml limpio
+          # 3. Instalamos Flet CLI versión estable para Android
+          pip install flet==0.21.2
+          
+          # 4. Crear flet.toml
           echo "[app]" > flet.toml
           echo "name = 'SDP-COM'" >> flet.toml
           echo "package_name = 'com.sdp.app'" >> flet.toml
           echo "main_module = 'main'" >> flet.toml
           
-          # 2. Asegurar assets
+          # 5. Organizar iconos
           mkdir -p assets
           if [ -f "torre-de-control.png" ]; then
             cp torre-de-control.png assets/icon.png
           fi
 
-          # 3. Construcción forzando la versión de requisitos
+          # 6. Compilar el APK
           flet build apk
 
       - name: Upload APK
