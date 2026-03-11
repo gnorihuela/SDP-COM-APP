@@ -1,8 +1,41 @@
-- name: Build APK
+name: Build Android APK
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install Python Dependencies
         run: |
-          # Instalamos flet con soporte para compilación
+          python -m pip install --upgrade pip
           pip install "flet[all]" pdfplumber
-          # Creamos el entorno de proyecto limpio
+
+      - name: Create Flutter Project Structure
+        run: |
+          # Esto crea el archivo pubspec.yaml que falta y las carpetas de Android
           flet create .
-          # Compilamos solo para la arquitectura más común de móvil
-          flet build apk
+          
+      - name: Build APK
+        run: |
+          # Ejecutamos la compilación apuntando directamente al proyecto actual
+          flet build apk --project .
+
+      - name: Upload APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SDP-COM-App
+          path: build/apk/*.apk
