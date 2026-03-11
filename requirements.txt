@@ -1,4 +1,5 @@
-flet==0.21.2
+flet
 pdfplumber
+
 
 
