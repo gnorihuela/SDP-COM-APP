@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -26,19 +26,18 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install flet pdfplumber
+          python -m pip install flet==0.21.0 pdfplumber
 
-      - name: Create Project and Build APK
+      - name: Build APK
         run: |
-          # 1. Forzamos la creación del proyecto para que no falte ningún archivo de configuración
-          flet create . --name "SDP_COM"
-          
-          # 2. Intentamos la construcción del APK
-          flet build apk
+          # Creamos el proyecto y forzamos el empaquetado
+          flet create . --name "sdp_com"
+          # Usamos --verbose para ver qué pasa si falla
+          flet build apk --verbose
 
       - name: Upload APK
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: SDP-COM-App-Instalable
-          path: build/apk/*.apk
+          # Buscamos de forma recursiva por si Flet lo guarda en otra ruta
+          path: "**/build/app/outputs/flutter-apk/*.apk"
