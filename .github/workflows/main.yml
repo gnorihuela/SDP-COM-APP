@@ -21,33 +21,34 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.10'
 
       - name: Build APK
         run: |
-          # 1. Instalación de dependencias
-          pip install flet pdfplumber
+          # 1. Instalación de dependencias del compilador
+          pip install flet==0.21.2 pdfplumber
           
-          # 2. ACEPTAR LICENCIAS DE ANDROID (Esto es lo que falta)
-          # Enviamos "y" (yes) a todas las licencias del SDK de Android
+          # 2. Aceptar licencias
           yes | sdkmanager --licenses || true
           
-          # 3. Configuración del proyecto
+          # 3. Crear flet.toml (Añadimos build_cache para asegurar limpieza)
           echo "[app]" > flet.toml
           echo "name = 'SDP-COM'" >> flet.toml
           echo "package_name = 'com.sdp.app'" >> flet.toml
           echo "main_module = 'main'" >> flet.toml
           
-          # 4. Iconos
+          # 4. Organizar activos
           mkdir -p assets
           if [ -f "torre-de-control.png" ]; then
             cp torre-de-control.png assets/icon.png
           fi
 
-          # 5. Construcción
-          flet build apk
+          # 5. CONSTRUCCIÓN FORZANDO REQUIREMENTS
+          # Usamos --project . para que busque el requirements.txt en la raíz
+          flet build apk --project .
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: SDP-COM-App
