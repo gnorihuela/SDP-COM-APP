@@ -7,55 +7,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
+      - name: Install Flet CLI
+        run: |
+          pip install flet==0.21.0
+
       - name: Build APK
         run: |
-          # 1. Instalación de herramientas de construcción
-          pip install flet pdfplumber
-          
-          # 2. CREACIÓN DEL ARCHIVO DE DEPENDENCIAS (FUNDAMENTAL PARA EL MÓVIL)
-          # Sin esto, la APK no sabe que debe llevar pdfplumber y se queda en NEGRO
-          echo "flet" > requirements.txt
-          echo "pdfplumber" >> requirements.txt
-          
-          # 3. CONFIGURACIÓN DEL PROYECTO (flet.toml)
+          # 1. Crear el flet.toml con la configuración mínima compatible
           echo "[app]" > flet.toml
           echo "name = 'SDP-COM'" >> flet.toml
           echo "package_name = 'com.sdp.app'" >> flet.toml
           echo "main_module = 'main'" >> flet.toml
-          echo "" >> flet.toml
-          echo "[android]" >> flet.toml
-          echo "icon = 'assets/icon.png'" >> flet.toml
           
-          # 4. PREPARACIÓN DE ASSETS
+          # 2. Crear carpetas necesarias
           mkdir -p assets
           if [ -f "torre-de-control.png" ]; then
             cp torre-de-control.png assets/icon.png
-          else
-            # Si no encuentra tu imagen, usa un placeholder para que no falle el build
-            touch assets/icon.png
           fi
-          
-          # 5. CONSTRUCCIÓN FINAL
-          flet build apk
-          
+
+          # 3. Compilar usando el comando oficial de Flet para CI
+          flet build apk --project .
+
       - name: Upload APK
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: SDP-COM-App
