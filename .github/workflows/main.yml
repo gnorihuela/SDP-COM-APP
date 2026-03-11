@@ -1,48 +1,40 @@
 name: Build Android APK
-
-on:
-  push:
-    branches:
-      - main
+on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
+          distribution: 'temurin'
           java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-
-      - name: Install dependencies
-        run: pip install "flet[all]" pdfplumber
-
-      - name: Initialize Flutter
-        run: flutter doctor
-
-      - name: Create Flet project structure
-        run: flet create .
-
       - name: Build APK
-        run: flet build apk --icon torre-de-control.png --name SDP-COM
+        run: |
+          # Instalamos lo necesario
+          pip install "flet[all]" pdfplumber
+          
+          # Construcción directa: 
+          # Flet ya es lo suficientemente listo para no borrar tu main.py 
+          # si usamos el comando de build directamente.
+          flet build apk --icon torre-de-control.png --name "SDP-COM"
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: SDP-COM-App
