@@ -25,12 +25,20 @@ jobs:
 
       - name: Build APK
         run: |
-          # Instalamos lo necesario
           pip install "flet[all]" pdfplumber
           
-          # Construcción directa: 
-          # Flet ya es lo suficientemente listo para no borrar tu main.py 
-          # si usamos el comando de build directamente.
+          # 1. GUARDAMOS TU CÓDIGO (Para que el --force no lo destruya)
+          cp main.py main_backup.py
+          
+          # 2. SOLUCIÓN AL ERROR: Forzamos la creación de la estructura necesaria
+          # Esto elimina el error "destination path '.' already exists"
+          flet create --force .
+          
+          # 3. RESTAURACIÓN: Borramos el archivo de ejemplo y ponemos el tuyo real
+          rm main.py
+          mv main_backup.py main.py
+          
+          # 4. CONSTRUCCIÓN: Ahora sí, con todo listo, fabricamos el APK
           flet build apk --icon torre-de-control.png --name "SDP-COM"
 
       - name: Upload APK
