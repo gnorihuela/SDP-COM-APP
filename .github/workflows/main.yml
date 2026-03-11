@@ -14,24 +14,24 @@ jobs:
 
       - name: Install Flet CLI
         run: |
-          pip install flet==0.21.0
+          pip install flet==0.21.2
 
       - name: Build APK
         run: |
-          # 1. Crear el flet.toml con la configuración mínima compatible
+          # 1. Crear flet.toml limpio
           echo "[app]" > flet.toml
           echo "name = 'SDP-COM'" >> flet.toml
           echo "package_name = 'com.sdp.app'" >> flet.toml
           echo "main_module = 'main'" >> flet.toml
           
-          # 2. Crear carpetas necesarias
+          # 2. Asegurar assets
           mkdir -p assets
           if [ -f "torre-de-control.png" ]; then
             cp torre-de-control.png assets/icon.png
           fi
 
-          # 3. Compilar usando el comando oficial de Flet para CI
-          flet build apk --project .
+          # 3. Construcción forzando la versión de requisitos
+          flet build apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
