@@ -27,11 +27,11 @@ jobs:
         run: |
           pip install "flet[all]" pdfplumber
           rm -rf build
-          # 1. HACER COPIA DE SEGURIDAD de tu código real
+          # 1. GUARDAR COPIA de tu código real
           cp main.py main_backup.py
-          # 2. CREAR ESTRUCTURA (Esto crea el código del contador "+")
+          # 2. CREAR ESTRUCTURA (Flet pondrá aquí su contador de ejemplo)
           flet create .
-          # 3. RESTAURAR TU CÓDIGO REAL (Borramos el "+" y ponemos el tuyo)
+          # 3. RESTAURAR TU CÓDIGO (Borramos el ejemplo y ponemos el tuyo)
           mv main_backup.py main.py
           # 4. CONSTRUIR APK (Con tu icono y nombre)
           flet build apk --icon torre-de-control.png --name "SDP-COM"
