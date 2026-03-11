@@ -6,6 +6,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Esto es nuevo: permite a Git recuperar archivos borrados
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -26,12 +28,14 @@ jobs:
       - name: Build APK Clean
         run: |
           pip install "flet[all]" pdfplumber
-          # Borramos cualquier carpeta de construcción previa para evitar conflictos
+          # Tu limpieza que funcionó
           rm -rf build
-          # El comando 'create' genera un pubspec.yaml PERFECTO automáticamente
-          flet create .
-          # Construimos el APK desde cero
-          flet build apk
+          # Tu comando que generó el pubspec perfecto
+          flet create . 
+          # EL TRUCO: Aquí recuperamos TU main.py antes de que se empaquete
+          git checkout main.py
+          # Construimos con tu icono y el nombre real de la app
+          flet build apk --icon torre-de-control.png --name "SDP-COM"
 
       - name: Upload APK
         if: success()
