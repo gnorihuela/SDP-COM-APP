@@ -30,14 +30,14 @@ jobs:
 
       - name: Build APK
         run: |
-          # Creamos el proyecto y forzamos el empaquetado
           flet create . --name "sdp_com"
-          # Usamos --verbose para ver qué pasa si falla
-          flet build apk --verbose
+          flet build apk
+          # Este paso es clave: busca el APK y lo pone en la carpeta principal
+          mkdir -p output_apk
+          find build -name "*.apk" -exec cp {} output_apk/ \;
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: SDP-COM-App-Instalable
-          # Buscamos de forma recursiva por si Flet lo guarda en otra ruta
-          path: "**/build/app/outputs/flutter-apk/*.apk"
+          path: output_apk/*.apk
