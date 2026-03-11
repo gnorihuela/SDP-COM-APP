@@ -28,10 +28,11 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install flet pdfplumber
 
-      - name: Flet Build APK
+      - name: Build APK
         run: |
-          # Este comando es el que fabrica el archivo real
-          python -m flet build apk
+          # El comando mágico para ignorar errores de permisos de git
+          git config --global --add safe.directory /github/workspace
+          python -m flet build apk --name "SDP-COM"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
