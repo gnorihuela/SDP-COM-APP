@@ -7,7 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Esto es nuevo: permite a Git recuperar archivos borrados
+          fetch-depth: 0  # Crucial para poder rescatar tu main.py original
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -28,13 +28,13 @@ jobs:
       - name: Build APK Clean
         run: |
           pip install "flet[all]" pdfplumber
-          # Tu limpieza que funcionó
+          # Limpieza total de carpetas previas
           rm -rf build
-          # Tu comando que generó el pubspec perfecto
+          # Generamos estructura (flet create pisa tu main.py)
           flet create . 
-          # EL TRUCO: Aquí recuperamos TU main.py antes de que se empaquete
+          # RESCATE: Volvemos a poner tu archivo real antes de empaquetar
           git checkout main.py
-          # Construimos con tu icono y el nombre real de la app
+          # Compilación final con tu icono y nombre de App
           flet build apk --icon torre-de-control.png --name "SDP-COM"
 
       - name: Upload APK
