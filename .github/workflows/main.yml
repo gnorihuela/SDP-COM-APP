@@ -25,29 +25,35 @@ jobs:
 
       - name: Build APK
         run: |
-          # 1. Instalación de dependencias en el servidor de GitHub
-          pip install "flet[all]" pdfplumber
+          # 1. Instalación de herramientas de construcción
+          pip install flet pdfplumber
           
           # 2. CREACIÓN DEL ARCHIVO DE DEPENDENCIAS (FUNDAMENTAL PARA EL MÓVIL)
-          # Esto le dice al compilador qué librerías meter dentro de la APK
+          # Sin esto, la APK no sabe que debe llevar pdfplumber y se queda en NEGRO
           echo "flet" > requirements.txt
           echo "pdfplumber" >> requirements.txt
           
-          # 3. CREACIÓN DEL ARCHIVO DE CONFIGURACIÓN (flet.toml)
+          # 3. CONFIGURACIÓN DEL PROYECTO (flet.toml)
           echo "[app]" > flet.toml
           echo "name = 'SDP-COM'" >> flet.toml
           echo "package_name = 'com.sdp.app'" >> flet.toml
+          echo "main_module = 'main'" >> flet.toml
           echo "" >> flet.toml
           echo "[android]" >> flet.toml
           echo "icon = 'assets/icon.png'" >> flet.toml
           
-          # 4. ORGANIZACIÓN DE ARCHIVOS
+          # 4. PREPARACIÓN DE ASSETS
           mkdir -p assets
-          cp torre-de-control.png assets/icon.png
+          if [ -f "torre-de-control.png" ]; then
+            cp torre-de-control.png assets/icon.png
+          else
+            # Si no encuentra tu imagen, usa un placeholder para que no falle el build
+            touch assets/icon.png
+          fi
           
-          # 5. CONSTRUCCIÓN
+          # 5. CONSTRUCCIÓN FINAL
           flet build apk
-
+          
       - name: Upload APK
         if: success()
         uses: actions/upload-artifact@v4
