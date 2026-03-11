@@ -28,14 +28,16 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install flet pdfplumber
 
-      - name: Build APK
+      - name: Create Project and Build APK
         run: |
-          # El comando 'create' genera los archivos de proyecto que faltan automáticamente
-          flet create .
-          # Ahora fabricamos con un nombre sencillo
-          flet build apk --project SDP_COM
+          # 1. Forzamos la creación del proyecto para que no falte ningún archivo de configuración
+          flet create . --name "SDP_COM"
+          
+          # 2. Intentamos la construcción del APK
+          flet build apk
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: SDP-COM-App-Instalable
