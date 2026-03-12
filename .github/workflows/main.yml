@@ -25,15 +25,21 @@ jobs:
 
       - name: Build APK
         run: |
+          # 1. Instalar Flet
           pip install flet pdfplumber
           
-          # Aceptar licencias de forma forzada
+          # 2. Aceptar licencias (Ruta universal de GitHub)
           yes | sdkmanager --licenses || true
           
-          # FORZAR LOS ARGUMENTOS: Si el flet.toml falla, esto lo pisa.
-          # Usamos comillas simples para evitar errores de shell.
-          flet build apk --project . --name 'sdpapp' --package-name 'com.sdp.app'
+          # 3. BORRAR CUALQUIER FLET.TOML PREVIO Y CREAR UNO NUEVO LIMPIO
+          # Usamos 'printf' en lugar de 'echo' para asegurar que no hay caracteres raros
+          rm -f flet.toml
+          printf "[app]\nname = \"sdpapp\"\npackage_name = \"com.sdp.app\"\nmain_module = \"main\"\n" > flet.toml
           
+          # 4. CONSTRUCCIÓN LIMPIA
+          # Sin argumentos extra que den error, solo el proyecto
+          flet build apk --project .
+
       - name: Upload APK
         if: success()
         uses: actions/upload-artifact@v4
