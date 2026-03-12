@@ -25,28 +25,30 @@ jobs:
 
       - name: Build APK
         run: |
-          # 1. Instalación de las herramientas necesarias
+          # 1. Instalación de herramientas de construcción
           pip install flet pdfplumber
           
-          # 2. Aceptación de licencias con ruta absoluta
-          # Esto evita el error de "command not found" del sdkmanager
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          # 2. Aceptación de licencias de Android (Crucial para que no falle Gradle)
+          yes | sdkmanager --licenses || true
           
-          # 3. Crear flet.toml (Configuración mínima que no da errores)
+          # 3. Creación del archivo de configuración flet.toml
+          # Esto le dice a la APK por dónde empezar a leer el código
           echo "[app]" > flet.toml
           echo "name = 'SDP-COM'" >> flet.toml
           echo "package_name = 'com.sdp.app'" >> flet.toml
           echo "main_module = 'main'" >> flet.toml
+          echo "" >> flet.toml
+          echo "[android]" >> flet.toml
+          echo "permissions = ['READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE']" >> flet.toml
           
-          # 4. Crear carpeta assets para evitar errores de ruta
+          # 4. Organización de Iconos
           mkdir -p assets
           if [ -f "torre-de-control.png" ]; then
             cp torre-de-control.png assets/icon.png
           fi
 
-          # 5. Construcción estándar
-          # Quitamos --no-splash para evitar el error de argumentos
-          flet build apk
+          # 5. Construcción de la APK usando el proyecto actual
+          flet build apk --project .
 
       - name: Upload APK
         if: success()
