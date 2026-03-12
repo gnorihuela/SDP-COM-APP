@@ -1,0 +1,7 @@
+[app]
+name = "sdpapp"
+package_name = "com.sdp.app"
+main_module = "main"
+
+[android]
+permissions = ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"]
