@@ -25,14 +25,16 @@ jobs:
 
       - name: Build APK
         run: |
-          # 1. Instalar herramientas
+          # 1. Instalar lo necesario
           pip install flet pdfplumber
           
-          # 2. Aceptar licencias usando la ruta de sistema fija de GitHub
-          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          # 2. Aceptar licencias (ruta corregida para Ubuntu 24.04)
+          yes | sdkmanager --licenses || true
           
-          # 3. Construir (Flet usará el flet.toml que creaste a mano)
-          flet build apk
+          # 3. CONSTRUCCIÓN FORZADA
+          # Usamos --project . para que lea SI O SI tu flet.toml
+          # Y añadimos --verbose para ver el error real si falla
+          flet build apk --project . --verbose
 
       - name: Upload APK
         if: success()
