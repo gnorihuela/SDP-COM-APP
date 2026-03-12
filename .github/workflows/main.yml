@@ -25,17 +25,15 @@ jobs:
 
       - name: Build APK
         run: |
-          # 1. Instalar lo necesario
           pip install flet pdfplumber
           
-          # 2. Aceptar licencias (ruta corregida para Ubuntu 24.04)
+          # Aceptar licencias de forma forzada
           yes | sdkmanager --licenses || true
           
-          # 3. CONSTRUCCIÓN FORZADA
-          # Usamos --project . para que lea SI O SI tu flet.toml
-          # Y añadimos --verbose para ver el error real si falla
-          flet build apk --project . --verbose
-
+          # FORZAR LOS ARGUMENTOS: Si el flet.toml falla, esto lo pisa.
+          # Usamos comillas simples para evitar errores de shell.
+          flet build apk --project . --name 'sdpapp' --package-name 'com.sdp.app'
+          
       - name: Upload APK
         if: success()
         uses: actions/upload-artifact@v4
