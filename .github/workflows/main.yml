@@ -25,14 +25,16 @@ jobs:
 
       - name: Build APK
         run: |
-          # 1. Instalar dependencias
+          # 1. Instalación
           pip install flet pdfplumber
           
-          # 2. Aceptar licencias (Ruta absoluta del corredor de GitHub)
-          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          # 2. Aceptar licencias (Ruta forzada)
+          yes | sdkmanager --licenses || true
           
-          # 3. Construir (Flet usará el flet.toml que has creado a mano)
-          flet build apk --project .
+          # 3. CONSTRUCCIÓN FORZADA (Aquí evitamos el error de nombre vacío)
+          # Al pasarle --name y --package-name aquí, Flet ya no puede fallar
+          # al generar el pubspec.yaml interno.
+          flet build apk --project . --name "sdpapp" --package-name "com.sdp.app"
 
       - name: Upload APK
         if: success()
