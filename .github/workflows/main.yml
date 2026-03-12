@@ -25,28 +25,13 @@ jobs:
 
       - name: Build APK
         run: |
-          # 1. Instalación de dependencias
+          # 1. Instalar dependencias
           pip install flet pdfplumber
           
-          # 2. Aceptar licencias usando la ruta absoluta de Android Home
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          # 2. Aceptar licencias (Ruta absoluta del corredor de GitHub)
+          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
           
-          # 3. Crear flet.toml (IMPORTANTE: Nombre en minúsculas y sin guiones raros)
-          echo "[app]" > flet.toml
-          echo "name = 'sdpcom'" >> flet.toml
-          echo "package_name = 'com.sdp.app'" >> flet.toml
-          echo "main_module = 'main'" >> flet.toml
-          echo "" >> flet.toml
-          echo "[android]" >> flet.toml
-          echo "permissions = ['READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE']" >> flet.toml
-          
-          # 4. Asegurar carpeta assets
-          mkdir -p assets
-          if [ -f "torre-de-control.png" ]; then
-            cp torre-de-control.png assets/icon.png
-          fi
-
-          # 5. Construcción limpia
+          # 3. Construir (Flet usará el flet.toml que has creado a mano)
           flet build apk --project .
 
       - name: Upload APK
